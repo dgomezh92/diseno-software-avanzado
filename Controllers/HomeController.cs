@@ -1,3 +1,4 @@
+
 using System.Diagnostics;
 using Diseño_avanzado.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -5,6 +6,7 @@ using Diseño_avanzado.Services;
 
 namespace Diseño_avanzado.Controllers
 {
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -14,11 +16,16 @@ namespace Diseño_avanzado.Controllers
             _logger = logger;
         }
 
+        // Método privado para validar autenticación
+        private bool UsuarioAutenticado()
+        {
+            return HttpContext.Session.GetString("UsuarioId") != null;
+        }
 
         // Redirige a la calculadora si está autenticado, si no al login
         public IActionResult Index()
         {
-            if (TempData["UsuarioId"] != null)
+            if (HttpContext.Session.GetString("UsuarioId") != null)
                 return RedirectToAction("Operar");
             return RedirectToAction("Login");
         }
@@ -38,7 +45,7 @@ namespace Diseño_avanzado.Controllers
             // Simulación de autenticación simple (reemplazar por lógica real)
             if (model.Username == "Equipo" && model.Password == "secreto")
             {
-                TempData["UsuarioId"] = "usuario123";
+                HttpContext.Session.SetString("UsuarioId", "usuario123");
                 return RedirectToAction("Operar");
             }
             ViewBag.Error = "Usuario o contraseña incorrectos";
@@ -49,6 +56,8 @@ namespace Diseño_avanzado.Controllers
         [HttpGet]
         public IActionResult Operar()
         {
+            if (!UsuarioAutenticado())
+                return RedirectToAction("Login");
             return View(new OperarViewModel());
         }
 
@@ -56,6 +65,8 @@ namespace Diseño_avanzado.Controllers
         [HttpPost]
         public IActionResult Operar(OperarViewModel model)
         {
+            if (!UsuarioAutenticado())
+                return RedirectToAction("Login");
             if (string.IsNullOrEmpty(model.TipoOperacion) || model.Operando1 == null || model.Operando2 == null)
             {
                 model.Mensaje = "Debe ingresar todos los datos";
@@ -79,7 +90,7 @@ namespace Diseño_avanzado.Controllers
             {
                 model.Resultado = operacion.Ejecutar();
                 // Guardar en historial (LiteDB)
-                var usuarioId = TempData["UsuarioId"] as string ?? "usuario123";
+                var usuarioId = HttpContext.Session.GetString("UsuarioId") ?? "usuario123";
                 var registro = new OperacionRegistro
                 {
                     Id = Guid.NewGuid(),
@@ -103,7 +114,9 @@ namespace Diseño_avanzado.Controllers
         [HttpGet]
         public IActionResult Historial()
         {
-            var usuarioId = TempData["UsuarioId"] as string ?? "usuario123";
+            if (!UsuarioAutenticado())
+                return RedirectToAction("Login");
+            var usuarioId = HttpContext.Session.GetString("UsuarioId") ?? "usuario123";
             var repo = new Services.RegistroOperacionesLiteDB("operaciones.db");
             var historial = repo.ObtenerHistorial(usuarioId);
             return View(historial);
