@@ -1,0 +1,26 @@
+@model Usuario
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+<div class="container mt-5" style="max-width:400px;">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h2 class="mb-4 text-center">Bienvenido</h2>
+            <form asp-action="Login" method="post">
+                <div class="mb-3">
+                    <label for="Username" class="form-label">Usuario</label>
+                    <input type="text" class="form-control" id="Username" name="Username" placeholder="Ej: Equipo" required />
+                </div>
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="Password" name="Password" placeholder="Ej: secreto" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Entrar</button>
+            </form>
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger mt-3 text-center">@ViewBag.Error</div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+@model List<OperacionRegistro>
+@{
+    ViewData["Title"] = "Historial de Operaciones";
+}
+<div class="container mt-5" style="max-width:800px;">
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h2 class="mb-4 text-center">Historial de Operaciones</h2>
+            @if (Model == null || !Model.Any())
+            {
+                <div class="alert alert-info text-center">No hay operaciones registradas.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Operación</th>
+                                <th>Operandos</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var op in Model)
+                        {
+                            <tr>
+                                <td>@op.Fecha.ToString("g")</td>
+                                <td>@op.TipoOperacion</td>
+                                <td>@string.Join(", ", op.Operandos)</td>
+                                <td class="fw-bold">@op.Resultado</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

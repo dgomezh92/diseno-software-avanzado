@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Diseño_avanzado.Models;
 using Microsoft.AspNetCore.Mvc;
+using Diseño_avanzado.Services;
 
 namespace Diseño_avanzado.Controllers
 {
@@ -13,14 +14,105 @@ namespace Diseño_avanzado.Controllers
             _logger = logger;
         }
 
+
+        // Redirige a la calculadora si está autenticado, si no al login
         public IActionResult Index()
+        {
+            if (TempData["UsuarioId"] != null)
+                return RedirectToAction("Operar");
+            return RedirectToAction("Login");
+        }
+
+
+        // GET: /Home/Login
+        [HttpGet]
+        public IActionResult Login()
         {
             return View();
         }
 
+        // POST: /Home/Login
+        [HttpPost]
+        public IActionResult Login(Usuario model)
+        {
+            // Simulación de autenticación simple (reemplazar por lógica real)
+            if (model.Username == "Equipo" && model.Password == "secreto")
+            {
+                TempData["UsuarioId"] = "usuario123";
+                return RedirectToAction("Operar");
+            }
+            ViewBag.Error = "Usuario o contraseña incorrectos";
+            return View(model);
+        }
+
+        // GET: /Home/Operar
+        [HttpGet]
+        public IActionResult Operar()
+        {
+            return View(new OperarViewModel());
+        }
+
+        // POST: /Home/Operar
+        [HttpPost]
+        public IActionResult Operar(OperarViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.TipoOperacion) || model.Operando1 == null || model.Operando2 == null)
+            {
+                model.Mensaje = "Debe ingresar todos los datos";
+                return View(model);
+            }
+            var operandos = new List<double> { model.Operando1.Value, model.Operando2.Value };
+            IOperacion operacion = model.TipoOperacion switch
+            {
+                "Suma" => new Suma(operandos),
+                "Resta" => new Resta(operandos),
+                "Multiplicacion" => new Multiplicacion(operandos),
+                "Division" => new Division(operandos),
+                _ => null
+            };
+            if (operacion == null)
+            {
+                model.Mensaje = "Operación no válida";
+                return View(model);
+            }
+            try
+            {
+                model.Resultado = operacion.Ejecutar();
+                // Guardar en historial (LiteDB)
+                var usuarioId = TempData["UsuarioId"] as string ?? "usuario123";
+                var registro = new OperacionRegistro
+                {
+                    Id = Guid.NewGuid(),
+                    TipoOperacion = operacion.TipoOperacion,
+                    Operandos = operandos,
+                    Resultado = model.Resultado.Value,
+                    Fecha = DateTime.Now,
+                    UsuarioId = usuarioId
+                };
+                var repo = new Services.RegistroOperacionesLiteDB("operaciones.db");
+                repo.RegistrarOperacion(registro);
+            }
+            catch (Exception ex)
+            {
+                model.Mensaje = "Error al calcular: " + ex.Message;
+            }
+            return View(model);
+        }
+
+        // GET: /Home/Historial
+        [HttpGet]
+        public IActionResult Historial()
+        {
+            var usuarioId = TempData["UsuarioId"] as string ?? "usuario123";
+            var repo = new Services.RegistroOperacionesLiteDB("operaciones.db");
+            var historial = repo.ObtenerHistorial(usuarioId);
+            return View(historial);
+        }
+
+        // Elimina la acción Privacy y redirige a la calculadora si alguien intenta acceder
         public IActionResult Privacy()
         {
-            return View();
+            return RedirectToAction("Operar");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
