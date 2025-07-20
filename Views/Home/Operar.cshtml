@@ -2,42 +2,51 @@
 @{
     ViewData["Title"] = "Operar";
 }
-<div class="container mt-5" style="max-width:500px;">
-    <div class="card shadow-lg">
-        <div class="card-body">
-            <h2 class="mb-4 text-center">Calculadora</h2>
-            <form asp-action="Operar" method="post">
-                <div class="mb-3">
-                    <label for="TipoOperacion" class="form-label">Tipo de operación</label>
-                    <select class="form-select" id="TipoOperacion" name="TipoOperacion" required>
+<div class="container d-flex justify-content-center align-items-center min-vh-100" style="max-width:600px;">
+    <div class="card shadow-lg w-100 border-0 rounded-4" style="background: linear-gradient(135deg, #f8fafc 60%, #e0e7ef 100%);">
+        <div class="card-body p-5">
+            <h2 class="mb-4 text-center fw-bold text-primary">Calculadora de Operaciones</h2>
+            <form asp-action="Operar" method="post" autocomplete="off">
+                <div class="mb-4">
+                    <label for="TipoOperacion" class="form-label fw-semibold">Tipo de operación</label>
+                    <select class="form-select form-select-lg rounded-3" id="TipoOperacion" name="TipoOperacion" required>
                         <option value="Suma">Suma</option>
                         <option value="Resta">Resta</option>
                         <option value="Multiplicacion">Multiplicación</option>
                         <option value="Division">División</option>
                     </select>
                 </div>
-                <div class="row mb-3">
+                <div class="row g-3 mb-4">
                     <div class="col">
-                        <label for="Operando1" class="form-label">Primer número</label>
-                        <input type="number" step="any" class="form-control" id="Operando1" name="Operando1" value="@Model.Operando1" required />
+                        <label for="Operando1" class="form-label fw-semibold">Primer número</label>
+                        <input type="number" step="any" class="form-control form-control-lg rounded-3 shadow-sm" id="Operando1" name="Operando1" value="@Model.Operando1" placeholder="Ej: 10" required />
                     </div>
                     <div class="col">
-                        <label for="Operando2" class="form-label">Segundo número</label>
-                        <input type="number" step="any" class="form-control" id="Operando2" name="Operando2" value="@Model.Operando2" required />
+                        <label for="Operando2" class="form-label fw-semibold">Segundo número</label>
+                        <input type="number" step="any" class="form-control form-control-lg rounded-3 shadow-sm" id="Operando2" name="Operando2" value="@Model.Operando2" placeholder="Ej: 8" required />
                     </div>
                 </div>
-                <button type="submit" class="btn btn-success w-100">Calcular</button>
+                <button type="submit" class="btn btn-gradient w-100 py-2 fw-bold fs-5 rounded-3" style="background: linear-gradient(90deg, #2563eb 60%, #38bdf8 100%); color: #fff; border: none;">Calcular</button>
             </form>
             @if (!string.IsNullOrEmpty(Model?.Mensaje))
             {
-                <div class="alert alert-warning mt-3">@Model.Mensaje</div>
+                <div class="alert alert-warning mt-4 text-center rounded-3 shadow-sm">@Model.Mensaje</div>
             }
             @if (Model != null && Model.Resultado != null)
             {
-                <div class="alert alert-info mt-4 text-center">
-                    <strong>Resultado:</strong> <span class="fs-4">@Model.Resultado</span>
+                <div class="alert alert-info mt-4 text-center rounded-3 shadow-sm">
+                    <span class="fw-bold text-success">Resultado:</span> <span class="fs-2">@Model.Resultado</span>
                 </div>
             }
         </div>
     </div>
 </div>
+<style>
+    body {
+        background: linear-gradient(120deg, #e0e7ef 0%, #f8fafc 100%);
+    }
+    .btn-gradient:hover, .btn-gradient:focus {
+        background: linear-gradient(90deg, #38bdf8 60%, #2563eb 100%) !important;
+        color: #fff !important;
+    }
+</style>

@@ -1,8 +1,21 @@
 ﻿@{
     ViewData["Title"] = "Calculadora";
 }
-<div class="container mt-5" style="max-width:500px;">
-    <h2 class="mb-4">Calculadora de Operaciones</h2>
-    <a class="btn btn-primary mb-3" href="/Home/Operar">Ir a la calculadora</a>
-    <a class="btn btn-secondary mb-3 ms-2" href="/Home/Historial">Ver historial</a>
+<div class="container d-flex justify-content-center align-items-center min-vh-100" style="max-width:600px;">
+    <div class="card shadow-lg w-100 border-0 rounded-4" style="background: linear-gradient(135deg, #f8fafc 60%, #e0e7ef 100%);">
+        <div class="card-body p-5 text-center">
+            <h2 class="mb-4 fw-bold text-primary">Calculadora de Operaciones</h2>
+            <a class="btn btn-gradient mb-3 w-100 py-2 fw-bold fs-5 rounded-3" href="/Home/Operar" style="background: linear-gradient(90deg, #2563eb 60%, #38bdf8 100%); color: #fff; border: none;">Ir a la calculadora</a>
+            <a class="btn btn-outline-primary mb-3 w-100 py-2 fw-bold fs-5 rounded-3" href="/Home/Historial">Ver historial</a>
+        </div>
+    </div>
 </div>
+<style>
+    body {
+        background: linear-gradient(120deg, #e0e7ef 0%, #f8fafc 100%);
+    }
+    .btn-gradient:hover, .btn-gradient:focus {
+        background: linear-gradient(90deg, #38bdf8 60%, #2563eb 100%) !important;
+        color: #fff !important;
+    }
+</style>
